@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload CSV</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background-color: #000;
+    }
+
+    #bgVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom right, rgba(10, 10, 10, 0.7), rgba(0, 0, 0, 0.4));
+      z-index: -1;
+    }
+
+    h1 {
+      position: absolute;
+      top: 40px;
+      text-align: center;
+      width: 100%;
+      font-size: 3rem;
+      color: #fff;
+      font-family: 'Orbitron', sans-serif;
+      text-shadow: 0 0 20px #00f0ff, 0 0 40px #f9d423;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #ff4e50, 0 0 20px #f9d423; }
+      to   { text-shadow: 0 0 20px #00f0ff, 0 0 30px #f9d423; }
+    }
+
+    .upload-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      padding: 50px 40px;
+      border-radius: 25px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.15);
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      animation: fadeIn 1.2s ease-in;
+      border: 2px solid transparent;
+      border-image: linear-gradient(135deg, #00f0ff, #ff4e50, #f9d423) 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .drop-zone {
+      border: 2px dashed rgba(0, 255, 255, 0.6);
+      border-radius: 15px;
+      padding: 30px;
+      color: #e0e0e0;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+
+    .drop-zone.dragover {
+      background-color: rgba(0, 255, 255, 0.1);
+      border-color: #f9d423;
+      color: #f9d423;
+      font-weight: bold;
+    }
+
+    #filename {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #ccc;
+      font-style: italic;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    input[type="submit"] {
+      margin-top: 25px;
+      background: linear-gradient(135deg, #ff4e50, #f9d423, #00f0ff);
+      color: white;
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff4e50, 0 0 30px #f9d423;
+      transition: all 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 20px #00f0ff, 0 0 40px #f9d423;
+    }
+
+    .loader {
+      display: none;
+      margin-top: 20px;
+      color: #00f0ff;
+      font-size: 16px;
+      font-weight: bold;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop id="bgVideo">
+    <source src="static/g.mp4" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+
+  <div class="overlay"></div>
+
+  <h1>Upload a CSV File</h1>
+  <div class="upload-box">
+    <form id="uploadForm" action="/data" method="post" enctype="multipart/form-data">
+      <div class="drop-zone" id="dropZone">📂 Drag & Drop your CSV file here or click to browse</div>
+      <input type="file" name="csv_file" id="csvFileInput" accept=".csv" required>
+      <div id="filename">No file selected</div>
+      <input id="uploadButton" type="submit" value="Upload">
+      <div id="loader" class="loader">⏳ Processing... Please wait</div>
+    </form>
+  </div>
+
+  <script>
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("csvFileInput");
+    const fileNameDisplay = document.getElementById("filename");
+    const uploadButton = document.getElementById("uploadButton");
+    const loader = document.getElementById("loader");
+
+    dropZone.addEventListener("click", () => fileInput.click());
+
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.endsWith('.csv')) {
+        fileInput.files = e.dataTransfer.files;
+        fileNameDisplay.textContent = file.name;
+      } else {
+        alert("Please upload a valid CSV file.");
+      }
+    });
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      fileNameDisplay.textContent = file ? file.name : "No file selected";
+    });
+
+    uploadButton.addEventListener("click", () => {
+      loader.style.display = "block";
+    });
+  </script>
+</body>
+</html>

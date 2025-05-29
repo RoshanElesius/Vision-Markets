@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Example</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            overflow-x: hidden;
+            height: 100vh;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            position: relative;
+            background-color: #000;
+        }
+
+        .background-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            color: #ff4444;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 25px 40px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 1.5s ease-out;
+            text-align: center;
+        }
+
+        p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #32FF32;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: slideIn 1s ease-out;
+        }
+
+        .container > div {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            width: calc(33% - 20px);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .container > div:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.7);
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .result-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #007aff;
+            color: white;
+            font-size: 2rem;
+            border: none;
+            cursor: pointer;
+            position: absolute;
+            bottom: 30px;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .result-btn:hover {
+            background-color: #328de7;
+            transform: translateY(-5px);
+        }
+
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            img {
+                width: 90%;
+                max-width: 350px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            p {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop class="background-video">
+        <source src="static/g.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="overlay"></div>
+
+    <h1>Training and Testing Plot</h1>
+
+    <div class="container">
+        <div>
+            <p>ARIMA TRAIN</p>
+            <img src="static/arima/arima_train.jpg" alt="ARIMA Train">
+        </div>
+        <div>
+            <p>LINEAR TRAIN</p>
+            <img src="static/linear/linear_train.jpg" alt="Linear Train">
+        </div>
+        <div>
+            <p>LSTM TRAIN</p>
+            <img src="static/lstm/lstm_train.jpg" alt="LSTM Train">
+        </div>
+    </div>
+
+    <button class="result-btn" onclick="window.location.href='/result'">→</button>
+
+</body>
+</html>
